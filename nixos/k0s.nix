@@ -98,6 +98,14 @@ in {
       default = "";
       type = str;
     };
+
+    nodeIp = mkOption {
+      description = ''
+        Node IP address optionally passed to kubelet.
+      '';
+      default = "";
+      type = str;
+    };
   };
 
   config = let
@@ -151,6 +159,9 @@ in {
             + optionalString (cfg.role == "single") " --single"
             + optionalString (cfg.role == "controller+worker") " --enable-worker --no-taints"
             + optionalString (cfg.workerProfile != "") " --profile=${cfg.workerProfile}"
+            + optionalString (
+              cfg.nodeIp != ""
+            ) " --kubelet-extra-args='--node-ip=${cfg.nodeIp} --address=${cfg.nodeIp}'"
             + optionalString requireJoinToken " --token-file=${cfg.tokenFile}";
         };
         unitConfig = mkIf requireJoinToken {
