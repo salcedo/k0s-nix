@@ -2,10 +2,10 @@
   lib,
   dataDir,
   ...
-}@args:
-let
+} @ args: let
   inherit (lib) mkEnableOption mkOption;
-  inherit (lib.types)
+  inherit
+    (lib.types)
     str
     port
     enum
@@ -17,31 +17,30 @@ let
   util = import ./util.nix args;
   inherit (util) mkStringMapOption;
   customTypes = import ./types.nix args;
-in
-{
+in {
   options = {
     api = mkOption {
       description = "Defines the settings for the K0s API.";
       type = submodule (import ./api.nix);
-      default = { };
+      default = {};
     };
 
     storage = mkOption {
       description = "Defines the storage related config options.";
-      type = submodule (a: (import ./storage.nix (a // { inherit dataDir; })));
-      default = { };
+      type = submodule (a: (import ./storage.nix (a // {inherit dataDir;})));
+      default = {};
     };
 
     network = mkOption {
       description = "Defines the network related config options.";
       type = submodule (import ./network.nix);
-      default = { };
+      default = {};
     };
 
     extensions = mkOption {
       description = "Specifies cluster extensions.";
       type = submodule (import ./extensions.nix);
-      default = { };
+      default = {};
     };
 
     konnectivity = {
@@ -87,20 +86,19 @@ in
         the configuration in the corresponding ConfigMap is is picked up during startup.
       '';
       type = listOf (submodule (import ./workerProfile.nix));
-      default = [ ];
+      default = [];
     };
 
     featureGates = mkOption {
       type = listOf (submodule (import ./featureGate.nix));
-      default = [ ];
+      default = [];
     };
 
-    images =
-      let
-        imageOption = mkOption {
-          type = customTypes.image;
-        };
-      in
+    images = let
+      imageOption = mkOption {
+        type = customTypes.image;
+      };
+    in
       mkOption {
         type = attrsOf (attrTag {
           konnectivity = imageOption;
@@ -109,12 +107,6 @@ in
           kubeproxy = imageOption;
           coredns = imageOption;
           pause = imageOption;
-          calico.cni = imageOption;
-          calico.flexvolume = imageOption;
-          calico.node = imageOption;
-          calico.kubecontrollers = imageOption;
-          kuberouter.cni = imageOption;
-          kuberouter.cniInstaller = imageOption;
           repository = mkOption {
             type = str;
           };
@@ -126,7 +118,7 @@ in
             ];
           };
         });
-        default = { };
+        default = {};
       };
 
     installConfig.users = {
